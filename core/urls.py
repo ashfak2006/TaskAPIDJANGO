@@ -1,6 +1,6 @@
 from django.urls import include,path
 
-from .views import listtasks,usercreate,taskdetail,logoutview,setduemessage,markasread,markallasread
+from .views import listtasks,usercreate,taskdetail,logoutview,setduemessage,markasread,markallasread,count_notificatons
 
 urlpatterns = [  
     path('tasks/',listtasks.as_view(),name='tasks'),
@@ -9,5 +9,6 @@ urlpatterns = [
     path('user/create/',usercreate.as_view(),name='users'),
     path('tasks/setduemessage/<int:id>/',markasread,name='markasread'),
     path('tasks/setduemessage/markallasread/',markallasread,name='markallasread'),
-    path('tasks/setduemessage/',setduemessage,name='setduemessage')
+    path('tasks/setduemessage/',setduemessage,name='setduemessage'),
+    path('tasks/notifications/count/',count_notificatons,name='count_notificatons'),
 ]

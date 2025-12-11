@@ -29,11 +29,10 @@ class tasks(models.Model):
 
     def __str__(self):
         return self.title
-    
+   
     def istaskdue(self):
         if self.due_date is not None:
             if self.IS_COMPLETED==False and timezone.now() > self.due_date:
-                
                 self.is_due=True
         
     
@@ -53,7 +52,8 @@ class tasks(models.Model):
         return super().save()
     
 class message(models.Model):
-    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='user_messages')
+    task=models.ForeignKey(tasks,on_delete=models.CASCADE,related_name='messages',null=True,blank=True)
     hedder=models.CharField(max_length=100)
     content=models.TextField()
     timestamp=models.DateTimeField(auto_now_add=True)

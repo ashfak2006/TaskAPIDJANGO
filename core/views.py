@@ -35,6 +35,7 @@ class listtasks(generics.ListCreateAPIView):
     filterset_fields = ['IS_COMPLETED', 'is_important', 'is_due','task_status']
     search_fields = ['title', 'description']
     def get_queryset(self):
+        setremainder(self.request.user)
         return tasks.objects.filter(user=self.request.user).order_by('-is_due','IS_COMPLETED','-is_important')
     def perform_create(self,serializer): 
         serializer.save(user=self.request.user)
@@ -93,3 +94,26 @@ def markallasread(request):
         msg.is_read=True
         msg.save()
     return Response({"detail":"All messages marked as read"},status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def count_notificatons(request):    
+    user=request.user
+    unread_count=message.objects.filter(user=user,is_read=False).count()
+    return Response({"unread_count":unread_count},status=status.HTTP_200_OK)
+
+
+
+def setremainder(user):
+    user_tasks=tasks.objects.filter(user=user)
+    for task in user_tasks:
+        if task.is_due:
+            if task.messages.exists() == False:
+                new_message=message.objects.create(
+                    user=user,
+                    task=task,
+                    hedder="Task Due Reminder",
+                    content=f'The task "{task.title}" is due.Please take necessary action'
+                )
+                print(f'Task "{task.title}" is due.')
